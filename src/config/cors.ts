@@ -20,8 +20,10 @@ export const corsOptions: CorsOptions = {
     origin: [
         // Angular mit devserver
         'http://localhost:4200',
-        // React mit Vite und devserver
+        // React mit Vite und devserver (HTTP)
         'http://localhost:5173',
+        // React mit Vite und devserver (HTTPS) - für Aufgabe 3
+        'https://localhost:5173',
         // Keycloak
         'http://localhost:8880',
         'https://studio.apollographql.com',
