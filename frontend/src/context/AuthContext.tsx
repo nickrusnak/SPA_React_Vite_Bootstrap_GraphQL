@@ -12,8 +12,8 @@
  * - Benutzerinformationen aus Token extrahieren
  */
 import { gql, useMutation } from '@apollo/client';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import type { AuthState, LoginCredentials, TokenPayload, User } from '../types';
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import type { LoginCredentials, TokenPayload, User } from '../types';
 
 // GraphQL-Mutation für Token-Anforderung (Login)
 const TOKEN_MUTATION = gql`
@@ -33,10 +33,40 @@ const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_KEY = 'user';
 
 /**
+ * Hilfsfunktion: Initialen Auth-State aus localStorage laden
+ * Diese Funktion wird nur einmal beim Initialisieren des States aufgerufen
+ */
+const getInitialAuthState = () => {
+  const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+  const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  const storedUser = localStorage.getItem(USER_KEY);
+
+  if (storedToken && storedUser) {
+    return {
+      isAuthenticated: true,
+      accessToken: storedToken,
+      refreshToken: storedRefreshToken,
+      user: JSON.parse(storedUser) as User,
+    };
+  }
+
+  return {
+    isAuthenticated: false,
+    accessToken: null,
+    refreshToken: null,
+    user: null,
+  };
+};
+
+/**
  * Interface für den AuthContext
  * Definiert alle Funktionen und Werte die der Context bereitstellt
  */
-interface AuthContextType extends AuthState {
+interface AuthContextType {
+  isAuthenticated: boolean;
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
 }
@@ -68,34 +98,16 @@ interface AuthProviderProps {
  * Wrapped die Anwendung und stellt den Auth-Context bereit
  */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  // State für Authentifizierung
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  // State mit initialem Wert aus localStorage (synchron, kein useEffect nötig)
+  const initialState = useMemo(() => getInitialAuthState(), []);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(initialState.isAuthenticated);
+  const [user, setUser] = useState<User | null>(initialState.user);
+  const [accessToken, setAccessToken] = useState<string | null>(initialState.accessToken);
+  const [refreshToken, setRefreshToken] = useState<string | null>(initialState.refreshToken);
 
   // GraphQL-Mutation für Login
   const [tokenMutation] = useMutation<{ token: TokenPayload }>(TOKEN_MUTATION);
-
-  /**
-   * Beim App-Start: Token aus localStorage wiederherstellen
-   * So bleibt der Benutzer eingeloggt nach einem Browser-Refresh
-   */
-  useEffect(() => {
-    const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-    const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-    const storedUser = localStorage.getItem(USER_KEY);
-
-    if (storedToken && storedUser) {
-      setAccessToken(storedToken);
-      setRefreshToken(storedRefreshToken);
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
-
-    setLoading(false);
-  }, []);
 
   /**
    * Login-Funktion
@@ -166,7 +178,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     user,
     accessToken,
     refreshToken,
-    loading,
     login,
     logout,
   };
