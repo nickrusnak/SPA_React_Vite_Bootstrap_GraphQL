@@ -6,14 +6,18 @@
  */
 
 /**
- * Enum für die Art eines Buches
+ * Konstante für die Art eines Buches
  * Muss mit dem Backend-Enum übereinstimmen
+ * (as const statt enum wegen erasableSyntaxOnly)
  */
-export enum Buchart {
-  EPUB = 'EPUB',
-  HARDCOVER = 'HARDCOVER',
-  PAPERBACK = 'PAPERBACK',
-}
+export const Buchart = {
+  EPUB: 'EPUB',
+  HARDCOVER: 'HARDCOVER',
+  PAPERBACK: 'PAPERBACK',
+} as const;
+
+// Typ für Buchart-Werte (ersetzt enum-Typ)
+export type Buchart = (typeof Buchart)[keyof typeof Buchart];
 
 /**
  * Titel eines Buches mit optionalem Untertitel

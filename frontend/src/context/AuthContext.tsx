@@ -11,8 +11,9 @@
  * - Login/Logout-Funktionen für Komponenten
  * - Benutzerinformationen aus Token extrahieren
  */
-import { gql, useMutation } from '@apollo/client';
-import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { gql } from '@apollo/client/core';
+import { useMutation } from '@apollo/client/react';
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { LoginCredentials, TokenPayload, User } from '../types';
 
 // GraphQL-Mutation für Token-Anforderung (Login)

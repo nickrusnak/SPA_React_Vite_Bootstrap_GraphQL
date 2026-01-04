@@ -7,9 +7,10 @@
  * - Error-Handling für Netzwerk- und GraphQL-Fehler
  * - In-Memory-Cache für optimierte Datenabfragen
  */
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client/core';
+import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import { setContext } from '@apollo/client/link/context';
-import { onError } from '@apollo/client/link/error';
+import { ErrorLink } from '@apollo/client/link/error';
 
 // Token-Key für localStorage (gleich wie im AuthContext)
 const TOKEN_KEY = 'access_token';
@@ -43,20 +44,19 @@ const authLink = setContext((_, { headers }) => {
 /**
  * Error-Link für globales Error-Handling
  * Loggt GraphQL- und Netzwerk-Fehler in die Konsole
+ * Apollo Client v4 verwendet CombinedGraphQLErrors für Error-Typen
  */
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = new ErrorLink(({ error }) => {
   // GraphQL-Fehler (z.B. Validierungsfehler, nicht gefunden, etc.)
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) => {
+  if (CombinedGraphQLErrors.is(error)) {
+    error.errors.forEach(({ message, locations, path }) => {
       console.error(
-        `[GraphQL Error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        `[GraphQL Error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`
       );
     });
-  }
-
-  // Netzwerk-Fehler (z.B. Server nicht erreichbar)
-  if (networkError) {
-    console.error(`[Network Error]: ${networkError}`);
+  } else {
+    // Netzwerk-Fehler (z.B. Server nicht erreichbar)
+    console.error(`[Network Error]: ${error.message}`);
   }
 });
 
