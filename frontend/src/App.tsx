@@ -14,14 +14,9 @@ import { apolloClient } from './apollo/client';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
 import { AuthProvider } from './context/AuthContext';
+import { LoginPage } from './pages/LoginPage';
 
-// Platzhalter-Komponenten (werden in Phase 4 implementiert)
-const LoginPage = () => (
-  <div className="text-center py-5">
-    <h1>Login</h1>
-    <p className="text-muted">Kommt in Phase 4...</p>
-  </div>
-);
+// Platzhalter-Komponenten (werden noch implementiert)
 
 const SearchPage = () => (
   <div className="text-center py-5">
