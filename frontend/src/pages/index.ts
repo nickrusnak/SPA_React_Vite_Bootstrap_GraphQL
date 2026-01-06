@@ -4,7 +4,7 @@
  * Ermöglicht einfachen Import: import { LoginPage, SearchPage } from '@/pages'
  */
 
+export { DetailPage } from './DetailPage';
 export { LoginPage } from './LoginPage';
 export { SearchPage } from './SearchPage';
-// export { DetailPage } from './DetailPage';
 // export { CreatePage } from './CreatePage';
