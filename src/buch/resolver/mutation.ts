@@ -22,12 +22,12 @@ import { getLogger } from '../../logger/logger.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.js';
 import { BuchDTO } from '../controller/buch-dto.js';
 import {
-    BuchWriteService,
     BuchCreate,
     BuchUpdate,
+    BuchWriteService,
 } from '../service/buch-write-service.js';
-import { type IdInput } from './query.js';
 import { HttpExceptionFilter } from './http-exception-filter.js';
+import { type IdInput } from './query.js';
 
 // Authentifizierung und Autorisierung durch
 //  GraphQL Shield
@@ -131,7 +131,7 @@ export class BuchMutationResolver {
             preis: buchDTO.preis.toNumber(),
             rabatt: buchDTO.rabatt?.toNumber() ?? 0,
             lieferbar: buchDTO.lieferbar ?? false,
-            datum: buchDTO.datum ?? null,
+            datum: buchDTO.datum === undefined ? null : new Date(buchDTO.datum),
             homepage: buchDTO.homepage ?? null,
             schlagwoerter: buchDTO.schlagwoerter ?? [],
             titel: {
@@ -153,7 +153,7 @@ export class BuchMutationResolver {
             preis: buchDTO.preis.toNumber(),
             rabatt: buchDTO.rabatt?.toNumber() ?? 0,
             lieferbar: buchDTO.lieferbar ?? false,
-            datum: buchDTO.datum ?? null,
+            datum: buchDTO.datum === undefined ? null : new Date(buchDTO.datum),
             homepage: buchDTO.homepage ?? null,
             schlagwoerter: buchDTO.schlagwoerter ?? [],
         };

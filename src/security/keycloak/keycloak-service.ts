@@ -172,7 +172,8 @@ export class KeycloakService implements KeycloakConnectOptionsFactory {
         const payload = JSON.parse(payloadDecoded);
         const { azp, exp, resource_access } = payload;
         this.#logger.debug('#logPayload: exp=%s', exp);
-        const { roles } = resource_access[azp]; // eslint-disable-line security/detect-object-injection
+        // roles kann undefined sein, wenn keine Client-Rollen vorhanden sind
+        const roles = resource_access?.[azp]?.roles; // eslint-disable-line security/detect-object-injection
         /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
         this.#logger.debug('#logPayload: roles=%o', roles);

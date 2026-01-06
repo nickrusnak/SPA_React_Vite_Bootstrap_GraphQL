@@ -40,30 +40,30 @@ services:
       -c ssl_key_file=/var/lib/postgresql/key.pem
     volumes:
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/data
+        source: /Users/swe/Zimmermann/volumes/postgres/data
         target: /var/lib/postgresql/18/docker
         #target: /var/lib/postgresql/data
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/tablespace
+        source: /Users/swe/Zimmermann/volumes/postgres/tablespace
         target: /var/lib/postgresql/tablespace
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/tls/key.pem
+        source: /Users/swe/Zimmermann/volumes/postgres/tls/key.pem
         target: /var/lib/postgresql/key.pem
         read_only: true
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/tls/certificate.crt
+        source: /Users/swe/Zimmermann/volumes/postgres/tls/certificate.crt
         target: /var/lib/postgresql/certificate.crt
         read_only: true
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/run
+        source: /Users/swe/Zimmermann/volumes/postgres/run
         # .s.PGSQL.5432.lock
         target: /var/run/postgresql
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/csv/buch
+        source: /Users/swe/Zimmermann/volumes/postgres/csv/buch
         target: /csv
         read_only: true
       - type: bind
-        source: C:/Zimmermann/volumes/postgres/sql
+        source: /Users/swe/Zimmermann/volumes/postgres/sql
         target: /sql
         read_only: true
     # https://docs.docker.com/compose/environment-variables/set-environment-variables
