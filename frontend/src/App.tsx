@@ -15,15 +15,10 @@ import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
 import { AuthProvider } from './context/AuthContext';
 import { LoginPage } from './pages/LoginPage';
+import { SearchPage } from './pages/SearchPage';
 
 // Platzhalter-Komponenten (werden noch implementiert)
 
-const SearchPage = () => (
-  <div className="text-center py-5">
-    <h1>Buchsuche</h1>
-    <p className="text-muted">Kommt in Phase 4...</p>
-  </div>
-);
 
 const DetailPage = () => (
   <div className="text-center py-5">

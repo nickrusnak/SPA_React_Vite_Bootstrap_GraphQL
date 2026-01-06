@@ -56,7 +56,9 @@ export interface SuchparameterInput {
   rating?: number;
   art?: Buchart;
   lieferbar?: boolean;
+  schlagwoerter?: string[];
 }
+
 
 /**
  * Input-Typ für das Anlegen eines neuen Buches
