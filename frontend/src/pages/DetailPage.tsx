@@ -8,16 +8,14 @@
  * - Verlinkt zur Bearbeiten-Seite (kommt später)
  */
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Alert, Badge, Button, Card, Col, ListGroup, Row, Spinner } from 'react-bootstrap';
+import { useState } from 'react';
+import { Alert, Badge, Button, Card, Col, ListGroup, Modal, Row, Spinner } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { DELETE_BUCH_MUTATION } from '../graphql/mutations';
 import { GET_BUCH } from '../graphql/queries';
 import type { Buch } from '../types';
 
-/**
- * Interface für Query-Response
- */
 interface BuchResponse {
   buch: Buch;
 }
@@ -25,37 +23,37 @@ interface BuchResponse {
 export const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); // Prüfen ob User eingeloggt ist (für Löschen-Button)
+  const { isAuthenticated } = useAuth();
+  
+  // State für Delete-Modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Query: Buch laden
   const { data, loading, error } = useQuery<BuchResponse>(GET_BUCH, {
     variables: { id },
-    skip: !id, // Query nicht ausführen wenn keine ID da ist
+    skip: !id,
   });
 
-  // Mutation: Buch löschen
   const [deleteBuch, { loading: deleteLoading }] = useMutation(DELETE_BUCH_MUTATION, {
     onCompleted: () => {
-      // Nach erfolgreichem Löschen zur Suche zurück
       navigate('/suche');
     },
     onError: (err) => {
+      setShowDeleteModal(false); // Modal schließen bei Fehler
       alert(`Fehler beim Löschen: ${err.message}`);
     },
-    // Cache aktualisieren wäre hier gut, aber Refetch auf der Suchseite reicht auch
   });
 
-  /**
-   * Löschen-Handler mit Sicherheitsabfrage
-   */
-  const handleDelete = async () => {
-    if (window.confirm('Wollen Sie dieses Buch wirklich unwiderruflich löschen?')) {
-      await deleteBuch({ variables: { id } });
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
   };
 
-  // Loading State
+  const confirmDelete = async () => {
+    await deleteBuch({ variables: { id } });
+    // Modal schließt automatisch durch Navigate, oder wir setzen es hier explizit false falls loading länger dauert
+  };
+
   if (loading) {
+    // ... loading spinner unchanged
     return (
       <div className="text-center py-5">
         <Spinner animation="border" role="status" variant="primary">
@@ -66,8 +64,8 @@ export const DetailPage = () => {
     );
   }
 
-  // Error State
   if (error || !data?.buch) {
+    // ... error alert unchanged
     return (
       <Alert variant="danger" className="mt-4">
         <Alert.Heading>Fehler beim Laden</Alert.Heading>
@@ -103,7 +101,6 @@ export const DetailPage = () => {
           )}
 
           <Row className="mt-4">
-            {/* Linke Spalte: Basisdaten */}
             <Col md={6}>
               <ListGroup variant="flush">
                 <ListGroup.Item>
@@ -124,7 +121,6 @@ export const DetailPage = () => {
               </ListGroup>
             </Col>
 
-            {/* Rechte Spalte: Zusätzliche Infos */}
             <Col md={6}>
               <ListGroup variant="flush">
                  <ListGroup.Item>
@@ -141,7 +137,7 @@ export const DetailPage = () => {
                   <strong>Schlagwörter:</strong>{' '}
                   {buch.schlagwoerter && buch.schlagwoerter.length > 0 ? (
                     <div className="d-flex flex-wrap gap-1 mt-1">
-                      {buch.schlagwoerter.map((sw, index) => (
+                      {buch.schlagwoerter.map((sw: string, index: number) => (
                         <Badge key={index} bg="secondary" pill>{sw}</Badge>
                       ))}
                     </div>
@@ -159,11 +155,10 @@ export const DetailPage = () => {
 
         <Card.Footer className="bg-white p-3">
           <div className="d-flex gap-2 justify-content-end">
-             {/* Später noch Bearbeiten-Button hinzufügen */}
              {isAuthenticated && (
                <Button 
                 variant="danger" 
-                onClick={handleDelete} 
+                onClick={handleDeleteClick} 
                 disabled={deleteLoading}
               >
                 {deleteLoading ? <Spinner size="sm" /> : '🗑 Buch löschen'}
@@ -172,6 +167,32 @@ export const DetailPage = () => {
           </div>
         </Card.Footer>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Buch löschen</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Möchten Sie das Buch <strong>{buch.titel.titel}</strong> wirklich unwiderruflich löschen?</p>
+          <p className="text-danger small">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)} disabled={deleteLoading}>
+            Abbrechen
+          </Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteLoading}>
+            {deleteLoading ? (
+               <>
+                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                 Lösche...
+               </>
+            ) : (
+              'Ja, löschen'
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
