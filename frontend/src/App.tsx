@@ -14,18 +14,12 @@ import { apolloClient } from './apollo/client';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
 import { AuthProvider } from './context/AuthContext';
+import { CreatePage } from './pages/CreatePage';
 import { DetailPage } from './pages/DetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { SearchPage } from './pages/SearchPage';
 
 // Platzhalter-Komponenten (werden noch implementiert)
-
-const CreatePage = () => (
-  <div className="text-center py-5">
-    <h1>Neues Buch anlegen</h1>
-    <p className="text-muted">Kommt in Phase 4...</p>
-  </div>
-);
 
 /**
  * Haupt-App-Komponente
