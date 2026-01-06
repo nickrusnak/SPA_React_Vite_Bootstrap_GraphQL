@@ -1,5 +1,5 @@
 /**
- * Apollo Client Konfiguration
+ * Apollo Client Konfiguration für Apollo Client v4
  *
  * Konfiguriert den GraphQL-Client mit:
  * - HTTP-Link zum Backend (über Vite-Proxy)
@@ -7,7 +7,7 @@
  * - Error-Handling für Netzwerk- und GraphQL-Fehler
  * - In-Memory-Cache für optimierte Datenabfragen
  */
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client/core';
+import { ApolloClient, ApolloLink, InMemoryCache, createHttpLink, from } from '@apollo/client/core';
 import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import { setContext } from '@apollo/client/link/context';
 import { ErrorLink } from '@apollo/client/link/error';
@@ -43,11 +43,10 @@ const authLink = setContext((_, { headers }) => {
 
 /**
  * Error-Link für globales Error-Handling
- * Loggt GraphQL- und Netzwerk-Fehler in die Konsole
- * Apollo Client v4 verwendet CombinedGraphQLErrors für Error-Typen
+ * Apollo Client v4: Verwendet ErrorLink Klasse mit CombinedGraphQLErrors
  */
-const errorLink = new ErrorLink(({ error }) => {
-  // GraphQL-Fehler (z.B. Validierungsfehler, nicht gefunden, etc.)
+const errorLink = new ErrorLink(({ error, operation }) => {
+  // GraphQL-Fehler prüfen mit CombinedGraphQLErrors.is()
   if (CombinedGraphQLErrors.is(error)) {
     error.errors.forEach(({ message, locations, path }) => {
       console.error(
@@ -55,8 +54,8 @@ const errorLink = new ErrorLink(({ error }) => {
       );
     });
   } else {
-    // Netzwerk-Fehler (z.B. Server nicht erreichbar)
-    console.error(`[Network Error]: ${error.message}`);
+    // Netzwerk-Fehler oder andere Fehler
+    console.error(`[Network Error]: ${error.message}`, operation.operationName);
   }
 });
 
@@ -66,7 +65,7 @@ const errorLink = new ErrorLink(({ error }) => {
  */
 export const apolloClient = new ApolloClient({
   // Links in Reihenfolge: Error -> Auth -> HTTP
-  link: from([errorLink, authLink, httpLink]),
+  link: from([errorLink as ApolloLink, authLink, httpLink]),
 
   // In-Memory-Cache für Client-seitiges Caching
   cache: new InMemoryCache({

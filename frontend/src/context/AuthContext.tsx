@@ -12,8 +12,8 @@
  * - Benutzerinformationen aus Token extrahieren
  */
 import { gql } from '@apollo/client/core';
-import { useMutation } from '@apollo/client/react';
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { apolloClient } from '../apollo/client';
 import type { LoginCredentials, TokenPayload, User } from '../types';
 
 // GraphQL-Mutation für Token-Anforderung (Login)
@@ -97,6 +97,9 @@ interface AuthProviderProps {
 /**
  * AuthProvider-Komponente
  * Wrapped die Anwendung und stellt den Auth-Context bereit
+ * 
+ * WICHTIG: Verwendet apolloClient.mutate() direkt statt useMutation Hook,
+ * damit der AuthProvider nicht im ApolloProvider sein muss.
  */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   // State mit initialem Wert aus localStorage (synchron, kein useEffect nötig)
@@ -107,19 +110,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [accessToken, setAccessToken] = useState<string | null>(initialState.accessToken);
   const [refreshToken, setRefreshToken] = useState<string | null>(initialState.refreshToken);
 
-  // GraphQL-Mutation für Login
-  const [tokenMutation] = useMutation<{ token: TokenPayload }>(TOKEN_MUTATION);
-
   /**
    * Login-Funktion
-   * Ruft die Token-Mutation auf und speichert die Tokens
+   * Verwendet apolloClient.mutate() direkt für die GraphQL-Anfrage
    *
    * @param credentials - Benutzername und Passwort
    * @returns true bei erfolgreicher Anmeldung, false bei Fehler
    */
-  const login = async (credentials: LoginCredentials): Promise<boolean> => {
+  const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
     try {
-      const { data } = await tokenMutation({
+      const { data } = await apolloClient.mutate<{ token: TokenPayload }>({
+        mutation: TOKEN_MUTATION,
         variables: {
           username: credentials.username,
           password: credentials.password,
@@ -154,13 +155,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Login fehlgeschlagen:', error);
       return false;
     }
-  };
+  }, []);
 
   /**
    * Logout-Funktion
    * Entfernt alle Tokens und setzt den State zurück
    */
-  const logout = () => {
+  const logout = useCallback(() => {
     // State zurücksetzen
     setAccessToken(null);
     setRefreshToken(null);
@@ -171,17 +172,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-  };
+  }, []);
 
   // Context-Wert mit allen Funktionen und State
-  const value: AuthContextType = {
+  const value: AuthContextType = useMemo(() => ({
     isAuthenticated,
     user,
     accessToken,
     refreshToken,
     login,
     logout,
-  };
+  }), [isAuthenticated, user, accessToken, refreshToken, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

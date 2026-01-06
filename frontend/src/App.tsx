@@ -8,7 +8,7 @@
  * - /neu: Neues Buch anlegen (geschützt)
  * - /: Startseite, leitet zu /suche weiter
  */
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { apolloClient } from './apollo/client';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
