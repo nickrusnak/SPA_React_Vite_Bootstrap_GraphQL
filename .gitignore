@@ -93,3 +93,5 @@ coverage
 # Project TODOs (local only)
 todo.md
 frontend/todo.md
+frontend/playwright-report/
+frontend/test-results/
