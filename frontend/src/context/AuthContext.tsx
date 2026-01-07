@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Benutzerinfo aus Token (vereinfacht - normalerweise würde man JWT dekodieren)
         const userInfo: User = {
           username: credentials.username,
-          roles: ['user'], // Standardrolle, könnte aus JWT extrahiert werden
+          roles: ['user'], // TODO: könnte man aus JWT dekodieren
         };
 
         // State aktualisieren
