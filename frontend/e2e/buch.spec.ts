@@ -1,73 +1,146 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 /**
- * E2E Tests für die Buch-App
+ * E2E Tests mit Page Object Model Pattern und Fixtures
  * 
- * Testet die wichtigsten User Flows:
- * - Login
- * - Suche
- * - Details anzeigen
+ * Die Tests nutzen Playwright Fixtures für Dependency Injection.
+ * Page Objects werden automatisch bereitgestellt und destrukturiert.
  */
 
-test.describe('Buch App E2E Tests', () => {
-  
-  // Vor jedem Test: Zur Startseite navigieren
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+test.describe('Authentifizierung', () => {
+  test('sollte die Login-Seite anzeigen', async ({ loginPage }) => {
+    await loginPage.navigate();
+    await loginPage.expectToBeVisible();
   });
 
-  test('sollte die Login-Seite anzeigen', async ({ page }) => {
-    // Prüfen ob Login-Formular sichtbar ist
-    await expect(page.getByRole('heading', { name: /anmeldung/i })).toBeVisible();
-    await expect(page.getByLabel(/benutzername/i)).toBeVisible();
-    await expect(page.getByLabel(/passwort/i)).toBeVisible();
-  });
-
-  test('sollte sich einloggen können', async ({ page }) => {
-    // Login-Daten eingeben
-    await page.getByLabel(/benutzername/i).fill('admin');
-    await page.getByLabel(/passwort/i).fill('p');
+  test('sollte sich erfolgreich einloggen können', async ({ loginPage, page }) => {
+    await loginPage.navigate();
+    await loginPage.login('admin', 'p');
     
-    // Login-Button klicken
-    await page.getByRole('button', { name: /anmelden|login/i }).click();
-    
-    // Warten auf Weiterleitung (z.B. zur Suche)
+    // Nach Login sollte zur Suche weitergeleitet werden
     await expect(page).toHaveURL(/suche/, { timeout: 10000 });
-    
-    // Prüfen ob eingeloggt (z.B. Logout-Button sichtbar)
-    await expect(page.getByRole('button', { name: /logout|abmelden/i })).toBeVisible();
   });
 
-  test('sollte Bücher suchen können', async ({ page }) => {
+  test('sollte Fehlermeldung bei falschem Login anzeigen', async ({ loginPage }) => {
+    await loginPage.navigate();
+    await loginPage.login('wronguser', 'wrongpassword');
+    
+    await loginPage.expectErrorMessage();
+  });
+
+  test('sollte sich ausloggen können', async ({ loginPage, page }) => {
     // Erst einloggen
-    await page.getByLabel(/benutzername/i).fill('admin');
-    await page.getByLabel(/passwort/i).fill('p');
-    await page.getByRole('button', { name: /anmelden|login/i }).click();
+    await loginPage.navigate();
+    await loginPage.login('admin', 'p');
     await expect(page).toHaveURL(/suche/, { timeout: 10000 });
     
-    // Suche durchführen (leere Suche = alle Bücher)
-    await page.getByRole('button', { name: /suchen/i }).click();
+    // Dann ausloggen
+    await page.getByRole('button', { name: /logout|abmelden/i }).click();
     
-    // Warten auf Ergebnisse
-    await expect(page.getByText(/bücher gefunden/i)).toBeVisible({ timeout: 10000 });
+    // Sollte wieder auf Login sein
+    await expect(page).toHaveURL(/login/, { timeout: 5000 });
+  });
+});
+
+test.describe('Buchsuche', () => {
+  // Vor jedem Test einloggen
+  test.beforeEach(async ({ loginPage, page }) => {
+    await loginPage.navigate();
+    await loginPage.login('admin', 'p');
+    await expect(page).toHaveURL(/suche/, { timeout: 10000 });
   });
 
-  test('sollte Buchdetails anzeigen können', async ({ page }) => {
-    // Erst einloggen
-    await page.getByLabel(/benutzername/i).fill('admin');
-    await page.getByLabel(/passwort/i).fill('p');
-    await page.getByRole('button', { name: /anmelden|login/i }).click();
+  test('sollte Suchergebnisse anzeigen', async ({ searchPage }) => {
+    await searchPage.search();
+    await searchPage.expectResults();
+  });
+
+  test('sollte nach Titel suchen können', async ({ searchPage }) => {
+    await searchPage.searchByTitel('Alice');
+    await searchPage.expectResults();
+  });
+
+  test('sollte nach Rating filtern können', async ({ searchPage }) => {
+    await searchPage.selectRating(5);
+    await searchPage.search();
+    await searchPage.expectResults();
+  });
+
+  test('sollte nach Buchart filtern können', async ({ searchPage }) => {
+    await searchPage.selectBuchart('HARDCOVER');
+    await searchPage.search();
+    await searchPage.expectResults();
+  });
+
+  test('sollte nur lieferbare Bücher filtern können', async ({ searchPage }) => {
+    await searchPage.filterLieferbar();
+    await searchPage.search();
+    await searchPage.expectResults();
+  });
+
+  test('sollte Suchformular zurücksetzen können', async ({ searchPage }) => {
+    // Etwas eingeben
+    await searchPage.titelInput.fill('Test');
+    
+    // Zurücksetzen
+    await searchPage.resetForm();
+    
+    // Feld sollte leer sein
+    await expect(searchPage.titelInput).toHaveValue('');
+  });
+});
+
+test.describe('Buchdetails', () => {
+  test.beforeEach(async ({ loginPage, page }) => {
+    await loginPage.navigate();
+    await loginPage.login('admin', 'p');
+    await expect(page).toHaveURL(/suche/, { timeout: 10000 });
+  });
+
+  test('sollte Buchdetails anzeigen können', async ({ searchPage, detailPage }) => {
+    // Suche und erstes Ergebnis öffnen
+    await searchPage.search();
+    await searchPage.expectResults();
+    await searchPage.openFirstResult();
+    
+    // Detail-Seite sollte sichtbar sein
+    await detailPage.expectToBeVisible();
+  });
+
+  test('sollte Lösch-Dialog anzeigen und abbrechen können', async ({ searchPage, detailPage }) => {
+    // Zu Details navigieren
+    await searchPage.search();
+    await searchPage.expectResults();
+    await searchPage.openFirstResult();
+    await detailPage.expectToBeVisible();
+    
+    // Löschen starten und abbrechen
+    await detailPage.startDelete();
+    await detailPage.cancelDelete();
+    
+    // Sollte immer noch auf Detail-Seite sein
+    await detailPage.expectToBeVisible();
+  });
+});
+
+test.describe('Navigation', () => {
+  test('sollte geschützte Routen zu Login weiterleiten', async ({ page }) => {
+    // Ohne Login direkt zur Suche versuchen
+    await page.goto('/suche');
+    
+    // Sollte zum Login weitergeleitet werden
+    await expect(page).toHaveURL(/login/);
+  });
+
+  test('sollte zur Create-Seite navigieren können', async ({ loginPage, page }) => {
+    await loginPage.navigate();
+    await loginPage.login('admin', 'p');
     await expect(page).toHaveURL(/suche/, { timeout: 10000 });
     
-    // Suche durchführen
-    await page.getByRole('button', { name: /suchen/i }).click();
-    await expect(page.getByText(/bücher gefunden/i)).toBeVisible({ timeout: 10000 });
+    // Zur Create-Seite navigieren
+    await page.goto('/neu');
     
-    // Ersten Details-Link klicken
-    await page.getByRole('link', { name: /details/i }).first().click();
-    
-    // Prüfen ob Detailseite geladen
-    await expect(page.getByRole('heading', { name: /buchdetails/i })).toBeVisible();
-    await expect(page.getByText(/isbn/i)).toBeVisible();
+    // Formular sollte sichtbar sein
+    await expect(page.getByLabel(/titel/i).first()).toBeVisible();
   });
 });
