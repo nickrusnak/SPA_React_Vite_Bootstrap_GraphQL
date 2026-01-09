@@ -145,8 +145,6 @@ export const LoginPage = () => {
               </Button>
             </div>
           </Form>
-
-
         </Card.Body>
       </Card>
     </div>
