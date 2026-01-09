@@ -1,0 +1,128 @@
+name: buch-app
+
+services:
+  # ==========================================
+  # 1. DATABASE (PostgreSQL)
+  # ==========================================
+  db:
+    image: postgres:18.1-trixie
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: p
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: buch
+      TZ: Europe/Berlin
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - /Users/swe/SPA_React_Vite_Bootstrap_GraphQL/.extras/compose/postgres/csv:/csv:ro
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # 2. IAM (Keycloak)
+  # ==========================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.5-0
+    container_name: keycloak
+    ports:
+      - "8880:8080" # Maps 8080 container to 8880 host (HTTP)
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: p
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+    command: ["start-dev"]
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3;if [ $? -eq 0 ]; then exit 0;else exit 1;fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ==========================================
+  # 3. MAIL (FakeSMTP)
+  # ==========================================
+  mail:
+    image: gessnerfl/fake-smtp-server:2.5.0
+    container_name: fakesmtp
+    ports:
+      - "8025:8025" # SMTP
+      - "8026:8080" # Web Interface
+    networks:
+      - app-network
+
+  # ==========================================
+  # 4. BACKEND (NestJS)
+  # ==========================================
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: buch-backend:latest
+    container_name: backend
+    ports:
+      - "3000:3000"
+    environment:
+      # Database connection
+      DB_HOST: db
+      DB_PORT: 5432
+      # Keycloak connection
+      KEYCLOAK_HOST: keycloak
+      KEYCLOAK_PORT: 8080
+      # Mail connection
+      MAIL_HOST: mail
+      MAIL_PORT: 25
+      
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://postgres:p@db/buch?schema=buch&connection_limit=10"
+      DATABASE_URL_ADMIN: "postgresql://postgres:p@db/buch?schema=buch&connection_limit=10"
+      CLIENT_SECRET: "FSupNI0isp1lnHNrRi9SozMDWY3tcwEt"
+    depends_on:
+      db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - /Users/swe/SPA_React_Vite_Bootstrap_GraphQL/.docker-config/app.toml:/opt/app/dist/config/resources/app.toml:ro
+
+  # ==========================================
+  # 5. FRONTEND (React/Nginx)
+  # ==========================================
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: buch-frontend:latest
+    container_name: frontend
+    volumes:
+      - /Users/swe/SPA_React_Vite_Bootstrap_GraphQL/frontend/dist:/usr/share/nginx/html
+      - /Users/swe/SPA_React_Vite_Bootstrap_GraphQL/frontend/certs:/etc/nginx/certs:ro
+      - /Users/swe/SPA_React_Vite_Bootstrap_GraphQL/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"   # HTTP Redirect
+      - "443:443" # HTTPS
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  keycloak_data:
+
+networks:
+  app-network:
+    name: app-network

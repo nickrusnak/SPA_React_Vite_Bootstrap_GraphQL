@@ -164,10 +164,7 @@ export const SearchPage = () => {
               <Col md={4}>
                 <Form.Group className="mb-3" controlId="art">
                   <Form.Label>Buchart (Dropdown)</Form.Label>
-                  <Form.Select
-                    value={art}
-                    onChange={(e) => setArt(e.target.value as Buchart | '')}
-                  >
+                  <Form.Select value={art} onChange={(e) => setArt(e.target.value as Buchart | '')}>
                     <option value="">-- Alle --</option>
                     <option value="EPUB">EPUB</option>
                     <option value="HARDCOVER">Hardcover</option>
@@ -270,9 +267,7 @@ export const SearchPage = () => {
 
       {hasSearched && !loading && !error && (
         <Card>
-          <Card.Header as="h5">
-            Ergebnisse ({allBooks.length} Bücher gefunden)
-          </Card.Header>
+          <Card.Header as="h5">Ergebnisse ({allBooks.length} Bücher gefunden)</Card.Header>
           <Card.Body>
             {allBooks.length === 0 ? (
               <p className="text-muted text-center py-4">
@@ -299,12 +294,12 @@ export const SearchPage = () => {
                         <td>
                           <strong>{buch.titel.titel}</strong>
                           {buch.titel.untertitel && (
-                            <small className="text-muted d-block">
-                              {buch.titel.untertitel}
-                            </small>
+                            <small className="text-muted d-block">{buch.titel.untertitel}</small>
                           )}
                         </td>
-                        <td><code>{buch.isbn}</code></td>
+                        <td>
+                          <code>{buch.isbn}</code>
+                        </td>
                         <td>
                           <Badge bg="info">{buch.art}</Badge>
                         </td>
@@ -318,10 +313,7 @@ export const SearchPage = () => {
                           )}
                         </td>
                         <td>
-                          <Link
-                            to={`/buch/${buch.id}`}
-                            className="btn btn-sm btn-outline-primary"
-                          >
+                          <Link to={`/buch/${buch.id}`} className="btn btn-sm btn-outline-primary">
                             Details
                           </Link>
                         </td>

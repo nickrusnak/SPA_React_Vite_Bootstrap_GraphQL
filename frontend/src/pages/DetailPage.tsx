@@ -24,7 +24,7 @@ export const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  
+
   // State für Delete-Modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -69,9 +69,14 @@ export const DetailPage = () => {
     return (
       <Alert variant="danger" className="mt-4">
         <Alert.Heading>Fehler beim Laden</Alert.Heading>
-        <p>Das Buch konnte nicht geladen werden. Möglicherweise wurde es gelöscht oder die ID ist ungültig.</p>
+        <p>
+          Das Buch konnte nicht geladen werden. Möglicherweise wurde es gelöscht oder die ID ist
+          ungültig.
+        </p>
         <hr />
-        <Link to="/suche" className="btn btn-outline-danger">Zurück zur Suche</Link>
+        <Link to="/suche" className="btn btn-outline-danger">
+          Zurück zur Suche
+        </Link>
       </Alert>
     );
   }
@@ -92,7 +97,7 @@ export const DetailPage = () => {
           <span>{buch.titel.titel}</span>
           <Badge bg="info">{buch.art}</Badge>
         </Card.Header>
-        
+
         <Card.Body>
           {buch.titel.untertitel && (
             <Card.Subtitle className="mb-3 text-muted display-6 fs-4">
@@ -107,13 +112,20 @@ export const DetailPage = () => {
                   <strong>ISBN:</strong> <code>{buch.isbn}</code>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Preis:</strong> <span className="fs-5 text-primary fw-bold">{buch.preis.toFixed(2)} €</span>
+                  <strong>Preis:</strong>{' '}
+                  <span className="fs-5 text-primary fw-bold">{buch.preis.toFixed(2)} €</span>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Bewertung:</strong> {'⭐'.repeat(buch.rating ?? 0)} ({buch.rating ?? 0} von 5)
+                  <strong>Bewertung:</strong> {'⭐'.repeat(buch.rating ?? 0)} ({buch.rating ?? 0}{' '}
+                  von 5)
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Lieferbar:</strong> {buch.lieferbar ? <Badge bg="success">Ja</Badge> : <Badge bg="danger">Nein</Badge>}
+                  <strong>Lieferbar:</strong>{' '}
+                  {buch.lieferbar ? (
+                    <Badge bg="success">Ja</Badge>
+                  ) : (
+                    <Badge bg="danger">Nein</Badge>
+                  )}
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <strong>Erscheinungsdatum:</strong> {buch.datum}
@@ -123,7 +135,7 @@ export const DetailPage = () => {
 
             <Col md={6}>
               <ListGroup variant="flush">
-                 <ListGroup.Item>
+                <ListGroup.Item>
                   <strong>Homepage:</strong>{' '}
                   {buch.homepage ? (
                     <a href={buch.homepage} target="_blank" rel="noopener noreferrer">
@@ -138,7 +150,9 @@ export const DetailPage = () => {
                   {buch.schlagwoerter && buch.schlagwoerter.length > 0 ? (
                     <div className="d-flex flex-wrap gap-1 mt-1">
                       {buch.schlagwoerter.map((sw: string, index: number) => (
-                        <Badge key={index} bg="secondary" pill>{sw}</Badge>
+                        <Badge key={index} bg="secondary" pill>
+                          {sw}
+                        </Badge>
                       ))}
                     </div>
                   ) : (
@@ -155,15 +169,11 @@ export const DetailPage = () => {
 
         <Card.Footer className="bg-white p-3">
           <div className="d-flex gap-2 justify-content-end">
-             {isAuthenticated && (
-               <Button 
-                variant="danger" 
-                onClick={handleDeleteClick} 
-                disabled={deleteLoading}
-              >
+            {isAuthenticated && (
+              <Button variant="danger" onClick={handleDeleteClick} disabled={deleteLoading}>
                 {deleteLoading ? <Spinner size="sm" /> : '🗑 Buch löschen'}
               </Button>
-             )}
+            )}
           </div>
         </Card.Footer>
       </Card>
@@ -174,19 +184,33 @@ export const DetailPage = () => {
           <Modal.Title>Buch löschen</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Möchten Sie das Buch <strong>{buch.titel.titel}</strong> wirklich unwiderruflich löschen?</p>
+          <p>
+            Möchten Sie das Buch <strong>{buch.titel.titel}</strong> wirklich unwiderruflich
+            löschen?
+          </p>
           <p className="text-danger small">Diese Aktion kann nicht rückgängig gemacht werden.</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)} disabled={deleteLoading}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeleteModal(false)}
+            disabled={deleteLoading}
+          >
             Abbrechen
           </Button>
           <Button variant="danger" onClick={confirmDelete} disabled={deleteLoading}>
             {deleteLoading ? (
-               <>
-                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                 Lösche...
-               </>
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="me-2"
+                />
+                Lösche...
+              </>
             ) : (
               'Ja, löschen'
             )}

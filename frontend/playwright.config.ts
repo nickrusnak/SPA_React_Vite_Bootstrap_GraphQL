@@ -23,7 +23,9 @@ export default defineConfig({
   // Gemeinsame Einstellungen für alle Tests
   use: {
     // Base URL für relative Navigationen
-    baseURL: 'https://localhost:5173',
+    // Für Docker: PLAYWRIGHT_BASE_URL=https://localhost
+    // Für Vite Dev: Standard (localhost:5173)
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://localhost:5173',
     
     // SSL-Zertifikat-Fehler ignorieren (self-signed)
     ignoreHTTPSErrors: true,

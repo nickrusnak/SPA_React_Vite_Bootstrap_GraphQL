@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { test as base } from '@playwright/test';
 import { DetailPage } from './pages/DetailPage';
 import { LoginPage } from './pages/LoginPage';

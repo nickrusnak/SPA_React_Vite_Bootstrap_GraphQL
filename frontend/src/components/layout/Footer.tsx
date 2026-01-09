@@ -13,9 +13,7 @@ export const Footer = () => {
   return (
     <footer className="bg-dark text-light py-3 mt-auto">
       <Container className="text-center">
-        <small>
-          © {currentYear} Buchverwaltung - Aufgabe 3 SPA
-        </small>
+        <small>© {currentYear} Buchverwaltung - Aufgabe 3 SPA</small>
       </Container>
     </footer>
   );

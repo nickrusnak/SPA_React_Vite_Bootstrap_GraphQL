@@ -97,7 +97,7 @@ interface AuthProviderProps {
 /**
  * AuthProvider-Komponente
  * Wrapped die Anwendung und stellt den Auth-Context bereit
- * 
+ *
  * WICHTIG: Verwendet apolloClient.mutate() direkt statt useMutation Hook,
  * damit der AuthProvider nicht im ApolloProvider sein muss.
  */
@@ -175,14 +175,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   // Context-Wert mit allen Funktionen und State
-  const value: AuthContextType = useMemo(() => ({
-    isAuthenticated,
-    user,
-    accessToken,
-    refreshToken,
-    login,
-    logout,
-  }), [isAuthenticated, user, accessToken, refreshToken, login, logout]);
+  const value: AuthContextType = useMemo(
+    () => ({
+      isAuthenticated,
+      user,
+      accessToken,
+      refreshToken,
+      login,
+      logout,
+    }),
+    [isAuthenticated, user, accessToken, refreshToken, login, logout]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

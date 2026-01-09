@@ -13,10 +13,7 @@ interface LoadingSpinnerProps {
   centered?: boolean;
 }
 
-export const LoadingSpinner = ({ 
-  message = 'Laden...', 
-  centered = true 
-}: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({ message = 'Laden...', centered = true }: LoadingSpinnerProps) => {
   const spinner = (
     <div className="text-center">
       <Spinner animation="border" role="status" variant="primary">

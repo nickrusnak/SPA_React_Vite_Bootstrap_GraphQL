@@ -8,4 +8,3 @@ export { CreatePage } from './CreatePage';
 export { DetailPage } from './DetailPage';
 export { LoginPage } from './LoginPage';
 export { SearchPage } from './SearchPage';
-

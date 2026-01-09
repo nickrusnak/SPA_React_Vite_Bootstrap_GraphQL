@@ -45,7 +45,7 @@ export const CreatePage = () => {
     },
     onError: (err) => {
       setError(err.message);
-    }
+    },
   });
 
   const handleSubmit = async (e: FormEvent) => {
@@ -82,8 +82,8 @@ export const CreatePage = () => {
       homepage: homepage.trim() || undefined,
       schlagwoerter: schlagwoerter
         .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0),
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0),
     };
 
     try {
@@ -112,11 +112,11 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="titel">
                   <Form.Label>Titel *</Form.Label>
-                  <Form.Control 
-                    type="text" 
-                    value={titel} 
-                    onChange={(e) => setTitel(e.target.value)} 
-                    required 
+                  <Form.Control
+                    type="text"
+                    value={titel}
+                    onChange={(e) => setTitel(e.target.value)}
+                    required
                     placeholder="Titel des Buches"
                   />
                 </Form.Group>
@@ -124,10 +124,10 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="untertitel">
                   <Form.Label>Untertitel</Form.Label>
-                  <Form.Control 
-                    type="text" 
-                    value={untertitel} 
-                    onChange={(e) => setUntertitel(e.target.value)} 
+                  <Form.Control
+                    type="text"
+                    value={untertitel}
+                    onChange={(e) => setUntertitel(e.target.value)}
                     placeholder="Optionaler Untertitel"
                   />
                 </Form.Group>
@@ -139,11 +139,11 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="isbn">
                   <Form.Label>ISBN *</Form.Label>
-                  <Form.Control 
-                    type="text" 
-                    value={isbn} 
-                    onChange={(e) => setIsbn(e.target.value)} 
-                    required 
+                  <Form.Control
+                    type="text"
+                    value={isbn}
+                    onChange={(e) => setIsbn(e.target.value)}
+                    required
                     placeholder="978-..."
                   />
                 </Form.Group>
@@ -151,13 +151,13 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="preis">
                   <Form.Label>Preis (€) *</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    step="0.01" 
+                  <Form.Control
+                    type="number"
+                    step="0.01"
                     min="0"
-                    value={preis} 
-                    onChange={(e) => setPreis(e.target.value)} 
-                    required 
+                    value={preis}
+                    onChange={(e) => setPreis(e.target.value)}
+                    required
                     placeholder="0.00"
                   />
                 </Form.Group>
@@ -169,10 +169,7 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="art">
                   <Form.Label>Buchart</Form.Label>
-                  <Form.Select 
-                    value={art} 
-                    onChange={(e) => setArt(e.target.value as Buchart)}
-                  >
+                  <Form.Select value={art} onChange={(e) => setArt(e.target.value as Buchart)}>
                     <option value={Buchart.HARDCOVER}>Hardcover</option>
                     <option value={Buchart.PAPERBACK}>Paperback</option>
                     <option value={Buchart.EPUB}>eBook (EPUB)</option>
@@ -182,10 +179,10 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="datum">
                   <Form.Label>Erscheinungsdatum</Form.Label>
-                  <Form.Control 
-                    type="date" 
-                    value={datum} 
-                    onChange={(e) => setDatum(e.target.value)} 
+                  <Form.Control
+                    type="date"
+                    value={datum}
+                    onChange={(e) => setDatum(e.target.value)}
                   />
                 </Form.Group>
               </Col>
@@ -197,19 +194,19 @@ export const CreatePage = () => {
                 <Form.Group>
                   <Form.Label>Rating ({rating} Sterne)</Form.Label>
                   <div className="d-flex gap-2 align-items-center">
-                    <Form.Range 
-                      min={0} 
-                      max={5} 
-                      step={1} 
-                      value={rating} 
-                      onChange={(e) => setRating(parseInt(e.target.value))} 
+                    <Form.Range
+                      min={0}
+                      max={5}
+                      step={1}
+                      value={rating}
+                      onChange={(e) => setRating(parseInt(e.target.value))}
                     />
                     <span>{'⭐'.repeat(rating)}</span>
                   </div>
                 </Form.Group>
               </Col>
               <Col md={6} className="d-flex align-items-center">
-                <Form.Check 
+                <Form.Check
                   type="switch"
                   id="lieferbar"
                   label="Buch ist lieferbar"
@@ -224,10 +221,10 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="homepage">
                   <Form.Label>Homepage URL</Form.Label>
-                  <Form.Control 
-                    type="url" 
-                    value={homepage} 
-                    onChange={(e) => setHomepage(e.target.value)} 
+                  <Form.Control
+                    type="url"
+                    value={homepage}
+                    onChange={(e) => setHomepage(e.target.value)}
                     placeholder="https://..."
                   />
                 </Form.Group>
@@ -235,15 +232,13 @@ export const CreatePage = () => {
               <Col md={6}>
                 <Form.Group controlId="schlagwoerter">
                   <Form.Label>Schlagwörter</Form.Label>
-                  <Form.Control 
-                    type="text" 
-                    value={schlagwoerter} 
-                    onChange={(e) => setSchlagwoerter(e.target.value)} 
+                  <Form.Control
+                    type="text"
+                    value={schlagwoerter}
+                    onChange={(e) => setSchlagwoerter(e.target.value)}
                     placeholder="JavaScript, Programmierung, ..."
                   />
-                  <Form.Text className="text-muted">
-                    Mehrere Begriffe mit Komma trennen
-                  </Form.Text>
+                  <Form.Text className="text-muted">Mehrere Begriffe mit Komma trennen</Form.Text>
                 </Form.Group>
               </Col>
             </Row>
@@ -263,7 +258,6 @@ export const CreatePage = () => {
                 )}
               </Button>
             </div>
-
           </Form>
         </Card.Body>
       </Card>

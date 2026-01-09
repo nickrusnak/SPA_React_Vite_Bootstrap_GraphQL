@@ -59,7 +59,6 @@ export interface SuchparameterInput {
   schlagwoerter?: string[];
 }
 
-
 /**
  * Input-Typ für das Anlegen eines neuen Buches
  * Entspricht dem GraphQL-Input "BuchInput"

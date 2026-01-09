@@ -160,6 +160,7 @@ rm -rf /tmp/*
 EOF
 
 WORKDIR /opt/app
+RUN mkdir -p log && chown -R node:node /opt/app
 
 USER node
 
