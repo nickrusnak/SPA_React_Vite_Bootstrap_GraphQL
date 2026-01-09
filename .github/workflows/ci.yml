@@ -33,6 +33,9 @@ jobs:
       - name: Build Frontend
         run: pnpm --filter frontend build
 
+      - name: Unit Tests Frontend
+        run: pnpm --filter frontend test:unit
+
       - name: Lint Backend
         run: pnpm eslint src --max-warnings 0 || echo "Lint completed with warnings"
         continue-on-error: true
