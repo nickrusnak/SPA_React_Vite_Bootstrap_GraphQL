@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-build:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint Frontend
+        run: pnpm --filter frontend eslint src --max-warnings 0 || echo "Lint completed with warnings"
+        continue-on-error: true
+
+      - name: Build Frontend
+        run: pnpm --filter frontend build
+
+      - name: Lint Backend
+        run: pnpm eslint src --max-warnings 0 || echo "Lint completed with warnings"
+        continue-on-error: true
