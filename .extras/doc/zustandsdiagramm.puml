@@ -1,0 +1,75 @@
+@startuml
+skinparam state {
+  BackgroundColor<<Auth>> LightBlue
+  BackgroundColor<<App>> LightGreen
+  BackgroundColor<<Form>> LightYellow
+}
+
+[*] --> Initialisierung
+
+state Initialisierung {
+  [*] --> TokenCheck
+  TokenCheck --> Unauthenticated : Kein Token / Invalid
+  TokenCheck --> Authenticated : Token gültig
+}
+
+state Unauthenticated <<Auth>> {
+  [*] --> LoginView
+  LoginView --> LoginError : Falsche Credentials
+  LoginError --> LoginView
+  LoginView --> Authenticated : Login erfolgreich
+}
+
+state Authenticated <<App>> {
+  [*] --> BücherListe
+
+  state BücherListe {
+    [*] --> Laden
+    Laden --> ListeAnzeigen : Erfolg
+    Laden --> ListenFehler : Netzwerkfehler
+    ListenFehler --> Laden : Retry
+  }
+
+  state BuchSuche {
+    [*] --> SuchformularLeer
+    SuchformularLeer --> WartenAufEingabe : Tippen
+    WartenAufEingabe --> Suchanfrage : Enter / Button
+    Suchanfrage --> Suchergebnisse : Treffer gefunden
+    Suchanfrage --> KeineTreffer : Keine Ergebnisse
+    KeineTreffer --> SuchformularLeer : Neue Suche
+    Suchergebnisse --> BuchDetails : Auswahl
+  }
+
+  state BuchDetails {
+    [*] --> DetailsLaden
+    DetailsLaden --> DetailsAnzeigen : Erfolg
+    DetailsLaden --> DetailsFehler : Fehler
+    DetailsFehler --> DetailsLaden : Retry
+    DetailsAnzeigen --> BuchDetails : Refresh
+  }
+
+  state BuchAnlegen <<Form>> {
+    [*] --> FormularLeer
+    FormularLeer --> Validierung : Eingabe
+    Validierung --> Valid : Daten OK
+    Validierung --> Invalid : Fehlerhaft
+    Invalid --> Validierung : Korrektur
+    Valid --> Senden : Speichern
+    Senden --> BücherListe : Erfolg
+    Senden --> SendeFehler : Server-Fehler
+    SendeFehler --> Valid : Retry
+  }
+
+  BücherListe --> BuchDetails : Auswahl
+  BücherListe --> BuchAnlegen : FAB (+)
+  BücherListe --> BuchSuche : Navigieren
+  
+  BuchSuche --> BücherListe : Home
+  
+  BuchDetails --> BücherListe : Zurück
+  BuchAnlegen --> BücherListe : Abbrechen
+}
+
+Authenticated --> Unauthenticated : Logout / Token expired
+
+@enduml
