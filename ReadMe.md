@@ -4,6 +4,8 @@ React Single Page Application mit NestJS GraphQL Backend.
 
 **Autor:** Nick Rusnak (runi1015)
 
+**Design:** [Figma Prototype](https://www.figma.com/proto/hHDVC99DEIit6gUguhVJob/SPA_Buch_runi1015?node-id=0-1&t=FYoXTAI8HbdOqmOb-1)
+
 ---
 
 ## Schnellstart
