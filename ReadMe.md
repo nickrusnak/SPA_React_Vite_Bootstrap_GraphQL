@@ -39,6 +39,7 @@ Die App läuft dann auf:
 - **Frontend:** https://localhost
 - **Backend API:** https://localhost/graphql
 - **Keycloak:** http://localhost:8880
+- **FakeSMTP (Mail UI):** http://localhost:8026
 
 ### App stoppen
 
