@@ -2,38 +2,44 @@
 Nick Rusnak - runi1015
 
 
-
 ```mermaid
 gantt
     title Projektverlauf
-    dateFormat  YYYY-MM-DD HH:mm
-    axisFormat  %a %H:00
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d.%m.
+    
+    section 03. Jan
+    Anforderungsanalyse (2h)           :done, 2026-01-03, 1d
     
     section 04. Jan
-    Analyse & Tech-Stack      :done, 2026-01-04 10:00, 2h
-    Prototyping               :done, 2026-01-04 15:00, 2h
-    Setup & Auth              :done, 2026-01-04 18:45, 2.5h
-    
+    Evaluierung (2h)                   :done, 2026-01-04, 1d
+    Prototyping & Recherche (2h)       :done, 2026-01-04, 1d
+    Projekt-Setup & Auth (2.5h)        :done, 2026-01-04, 1d
+
     section 05. Jan
-    UI Planung                :done, 2026-01-05 15:00, 1.5h
-    Komponenten Coding        :done, 2026-01-05 17:00, 2h
+    UI/UX Design Planung (1.5h)        :done, 2026-01-05, 1d
+    UI-Komponenten & Tests (2h)        :done, 2026-01-05, 1d
 
     section 06. Jan
-    Schema Analyse            :done, 2026-01-06 14:00, 2h
-    Core Features (Coding)    :done, 2026-01-06 16:30, 6h
+    GraphQL Schema Analyse (2h)        :done, 2026-01-06, 1d
+    Feature-Implementierung (6h)       :done, 2026-01-06, 1d
 
     section 07. Jan
-    Manuelles Testing         :done, 2026-01-07 18:00, 2h
-    Test-Framework Setup      :done, 2026-01-07 21:00, 1.5h
-    Erste E2E Tests           :done, 2026-01-07 23:00, 1h
+    Manuelles Testen & Bugfix (2h)     :done, 2026-01-07, 1d
+    Testing Framework (1.5h)           :done, 2026-01-07, 1d
+    Tests: Setup & Basic E2E (1h)      :done, 2026-01-07, 1d
     
     section 08. Jan
-    Security Konzept          :done, 2026-01-08 14:00, 2h
-    Code Review               :done, 2026-01-08 16:30, 1h
-    Tests Refactoring         :done, 2026-01-08 18:15, 2h
-    Cleanup & Optimierung     :done, 2026-01-08 21:00, 2h
-    Docker Debugging          :done, 2026-01-08 23:30, 1h
+    Sicherheitskonzept (2h)            :done, 2026-01-08, 1d
+    Code Quality Review (1h)           :done, 2026-01-08, 1d
+    Tests: Refactoring & Fixtures (2h) :done, 2026-01-08, 1d
     
-    section 09. Jan (Nacht)
-    Abgabe & Doku             :done, 2026-01-09 00:30, 1h
+    section 09. Jan
+    Code Cleanup & Optimierung (2h)    :done, 2026-01-09, 1d
+    Infrastruktur Debugging (2h)       :done, 2026-01-09, 1d
+    Finalisierung & Doku (1h)          :done, 2026-01-09, 1d
 ```
+
+## Zusammenfassung
+- **Gesamtaufwand:** 34 Stunden
+- **Zeitraum:** 03.01.2026 - 09.01.2026
