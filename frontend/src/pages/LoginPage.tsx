@@ -146,16 +146,7 @@ export const LoginPage = () => {
             </div>
           </Form>
 
-          {/* Hinweis für Testbenutzer */}
-          <div className="mt-4 p-3 bg-light rounded">
-            <small className="text-muted">
-              <strong>Test-Zugangsdaten:</strong>
-              <br />
-              Benutzer: <code>admin</code>
-              <br />
-              Passwort: <code>p</code>
-            </small>
-          </div>
+
         </Card.Body>
       </Card>
     </div>
